@@ -27,6 +27,10 @@
     header {
       border-bottom: 1px solid #1c2331;
     }
+    .list-group-item i:hover {
+      cursor: pointer;
+      color: #ff4444;
+    }
   </style>
 </head>
 
@@ -68,27 +72,51 @@
     let monthName = months[d.getMonth()]
     let dayName = days[d.getDay()]
     document.getElementById('day').innerHTML = dayName;
-    document.getElementById('date').innerHTML = `${monthName} ${d.getDay()}, ${d.getFullYear()}`
+    document.getElementById('date').innerHTML = `${monthName} ${d.getDate()}, ${d.getFullYear()}`
 
     const formDOM = document.getElementById('todo-form')
     const inputDOM = document.getElementById('todo-input')
     const listDOM = document.getElementById('todo-list')
 
+    let todos = []
+
+    const addDataTodos = () => localStorage.setItem('todos', JSON.stringify(todos))
+    const getDataTodos = JSON.parse(localStorage.getItem('todos'))
+    if (getDataTodos !== null) {
+      todos = getDataTodos
+    }
+
+    const showTodoList = () => {
+      listDOM.innerHTML = ''
+      todos.map((list, index) => {
+        listDOM.innerHTML +=
+          `<li class="list-group-item d-flex justify-content-between special-color-dark border-dark">${list} <i class="fa fa-times align-self-center" onclick="deleteTodo(${index})"></i></li>`
+      })
+    }
+
+    showTodoList()
+
     formDOM.addEventListener('submit', (e) => {
       e.preventDefault()
 
-      let todo = inputDOM.value
-      if (todo !== '') {
-        listDOM.innerHTML += `<li class="list-group-item special-color-dark border-dark">${todo}</li>`
-      }
+      const todo = inputDOM.value
+
+      todos.push(todo)
 
       inputDOM.value = ''
 
-      localStorage.setItem('html', listDOM.innerHTML)
+      console.log(`On going Todo : ${todos}`)
+
+      addDataTodos()
+      showTodoList()
     })
 
-    const html = localStorage.getItem('html')
-    listDOM.innerHTML = html
+    const deleteTodo = (index) => {
+      todos.splice(index, 1)
+      addDataTodos()
+      showTodoList()
+      console.log(`Todo yang tersisa : ${todos}`)
+    }
   </script>
 </body>
 
